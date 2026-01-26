@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Prayer {
@@ -24,4 +25,27 @@ model Prayer {
 
   @@index([email])
   @@index([createdAt])
+}
+
+model IntercessionPost {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  date        DateTime
+  images      String   @db.Text // JSON array de URLs das imagens
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([published])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hash bcrypt
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

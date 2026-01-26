@@ -15,33 +15,86 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
   const [currentSlide, setCurrentSlide] = useState(0)
-
-  // Imagens do carrossel - você pode substituir por fotos reais da igreja
-  const carouselImages = [
-    {
-      url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
-      alt: 'Pessoas orando juntas'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80',
-      alt: 'Mãos em oração'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=800&q=80',
-      alt: 'Comunidade em oração'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1470072768013-bf9532d6d1a0?w=800&q=80',
-      alt: 'Momento de reflexão'
-    }
-  ]
+  const [recentPosts, setRecentPosts] = useState<any[]>([])
 
   useEffect(() => {
+    // Buscar posts recentes
+    fetch('/api/intercessions?limit=4')
+      .then(res => res.json())
+      .then(data => {
+        if (data.posts && data.posts.length > 0) {
+          setRecentPosts(data.posts)
+        }
+      })
+      .catch(err => console.error('Erro ao buscar posts:', err))
+  }, [])
+
+  // Imagens do carrossel - usa posts reais ou fallback
+  const carouselImages = recentPosts.length > 0
+    ? recentPosts
+        .map(post => {
+          let imageUrl = ''
+          // A API já retorna images como array, não precisa fazer parse
+          if (Array.isArray(post.images) && post.images.length > 0) {
+            imageUrl = post.images[0]
+          } else if (typeof post.images === 'string') {
+            // Fallback caso ainda seja string
+            try {
+              const parsed = JSON.parse(post.images)
+              imageUrl = Array.isArray(parsed) ? parsed[0] : parsed
+            } catch {
+              imageUrl = post.images
+            }
+          }
+          return {
+            id: post.id,
+            url: imageUrl,
+            alt: post.title,
+            date: new Date(post.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+          }
+        })
+        .filter(image => {
+          // Valida se url existe, é string, não está vazia e começa com http
+          return image.url && 
+                 typeof image.url === 'string' && 
+                 image.url.trim().length > 0 && 
+                 (image.url.startsWith('http://') || image.url.startsWith('https://'))
+        })
+    : []
+  
+  // Se não houver posts válidos, usa imagens de fallback
+  const displayImages = carouselImages.length > 0 
+    ? carouselImages 
+    : [
+        {
+          url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
+          alt: 'Pessoas orando juntas',
+          date: 'Em breve'
+        },
+        {
+          url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80',
+          alt: 'Mãos em oração',
+          date: 'Em breve'
+        },
+        {
+          url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=800&q=80',
+          alt: 'Comunidade em oração',
+          date: 'Em breve'
+        },
+        {
+          url: 'https://images.unsplash.com/photo-1470072768013-bf9532d6d1a0?w=800&q=80',
+          alt: 'Momento de reflexão',
+          date: 'Em breve'
+        }
+      ]
+
+  useEffect(() => {
+    if (displayImages.length === 0) return
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselImages.length)
+      setCurrentSlide((prev) => (prev + 1) % displayImages.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [displayImages.length])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -113,44 +166,70 @@ export default function Home() {
         {/* Main Content */}
         <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Carrossel */}
-          <div className="mb-6 relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-2xl">
-            {carouselImages.map((image, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 transition-opacity duration-1000 ${
-                  index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <Image
-                  src={image.url}
-                  alt={image.alt}
-                  fill
+          {displayImages.length > 0 && (
+            <Link href="/intercessoes" className="block mb-6 relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-2xl group cursor-pointer">
+              {displayImages.map((image, index) => {
+                // Safety check para garantir URL válida
+                if (!image.url || typeof image.url !== 'string' || image.url.trim().length === 0) {
+                  return null
+                }
+                return (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${
+                      index === currentSlide ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.alt}
+                      fill
                   unoptimized
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                   priority={index === 0}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                
+                {/* Data */}
+                <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-gray-900 dark:text-white">
+                  📅 {image.date}
+                </div>
+                
+                {/* Título e Badge */}
                 <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white font-semibold text-lg drop-shadow-lg">{image.alt}</p>
+                  <p className="text-white font-bold text-lg drop-shadow-lg mb-2">{image.alt}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 bg-blue-600/80 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                      🕊️ Intercessão
+                    </span>
+                    <span className="text-white/80 text-xs group-hover:text-white transition-colors">
+                      Clique para ver mais →
+                    </span>
+                  </div>
                 </div>
               </div>
+            )
+          })}
+          {/* Indicadores */}
+          <div className="absolute bottom-4 right-4 flex gap-2 z-10">
+            {displayImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.preventDefault()
+                  setCurrentSlide(index)
+                }}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentSlide
+                    ? 'bg-white w-6'
+                    : 'bg-white/50 hover:bg-white/75'
+                }`}
+                aria-label={`Ir para slide ${index + 1}`}
+              />
             ))}
-            {/* Indicadores */}
-            <div className="absolute bottom-4 right-4 flex gap-2">
-              {carouselImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentSlide
-                      ? 'bg-white w-6'
-                      : 'bg-white/50 hover:bg-white/75'
-                  }`}
-                  aria-label={`Ir para slide ${index + 1}`}
-                />
-              ))}
-            </div>
           </div>
+        </Link>
+        )}
 
           {/* Intro Section */}
           <div className="text-center mb-8 space-y-3">
