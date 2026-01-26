@@ -69,26 +69,26 @@ export default function MinhasOracoes() {
       <div className="relative z-10">
         {/* Header */}
         <header className="border-b border-white/20 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">✝️</span>
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-xl">✝️</span>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
                     Conjunto Guedes
                   </h1>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Muro das Orações</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Muro das Orações</p>
                 </div>
               </Link>
               
               <Link 
                 href="/"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 hover:bg-white/80 dark:bg-gray-800/50 dark:hover:bg-gray-800/80 transition-all shadow-md text-sm font-medium text-gray-700 dark:text-gray-200"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/50 hover:bg-white/80 dark:bg-gray-800/50 dark:hover:bg-gray-800/80 transition-all shadow-md text-xs font-medium text-gray-700 dark:text-gray-200"
               >
                 <span>🙏</span>
-                Novo Pedido
+                <span>Novo Pedido</span>
               </Link>
             </div>
           </div>
@@ -178,28 +178,32 @@ export default function MinhasOracoes() {
                     {prayers.map((prayer) => (
                       <div
                         key={prayer.id}
-                        className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all"
+                        className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all"
                       >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-2xl">🙏</span>
-                            {prayer.name && (
-                              <span className="font-semibold text-gray-900 dark:text-white">
-                                {prayer.name}
-                              </span>
-                            )}
-                            {prayer.prayerForOther && prayer.otherPersonName && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
-                                <span>👥</span>
-                                Orando por: {prayer.otherPersonName}
-                              </span>
-                            )}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start gap-2 mb-2">
+                              <span className="text-xl sm:text-2xl flex-shrink-0">🙏</span>
+                              <div className="flex-1 min-w-0">
+                                {prayer.name && (
+                                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">
+                                    {prayer.name}
+                                  </h3>
+                                )}
+                                {prayer.prayerForOther && prayer.otherPersonName && (
+                                  <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 mt-1">
+                                    <span>👥</span>
+                                    <span className="break-words">Orando por: {prayer.otherPersonName}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
                             {formatDate(prayer.createdAt)}
                           </span>
                         </div>
-                        <p className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
                           {prayer.prayer}
                         </p>
                       </div>
