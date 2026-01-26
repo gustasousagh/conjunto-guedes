@@ -55,10 +55,42 @@ export default function DashboardPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
-        <div className="text-center">
-          <div className="animate-spin inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Carregando...</p>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Background com gradiente celestial */}
+        <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900" />
+        
+        {/* Efeito de luz divina */}
+        <div className="fixed inset-0 opacity-30">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+
+        {/* Loading animado */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            {/* Ícone animado */}
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce">
+                <span className="text-5xl">✝️</span>
+              </div>
+              <div className="absolute inset-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full animate-ping opacity-75"></div>
+            </div>
+            
+            {/* Texto */}
+            <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400 mb-3">
+              Carregando Dashboard
+            </h2>
+            
+            {/* Barra de progresso animada */}
+            <div className="w-64 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+            </div>
+            
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 animate-pulse">
+              Preparando suas estatísticas...
+            </p>
+          </div>
         </div>
       </div>
     )

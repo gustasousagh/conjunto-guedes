@@ -82,7 +82,7 @@ export default function Home() {
           date: 'Em breve'
         },
         {
-          url: 'https://images.unsplash.com/photo-1470072768013-bf9532d6d1a0?w=800&q=80',
+          url: 'https://images.unsplash.com/photo-1583090318293-ebd145b2c63f?q=80&w=1435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
           alt: 'Momento de reflexão',
           date: 'Em breve'
         }
