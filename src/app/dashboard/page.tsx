@@ -12,9 +12,13 @@ export default function DashboardPage() {
     prayersToday: 0,
     prayersTotal: 0,
     intercessionsPublished: 0,
+    prayersSinceLastIntercession: 0,
+    lastIntercessionDate: null as string | null,
+    prayersForOthersTotal: 0,
+    prayersForOthersToday: 0,
+    uniquePrayersForOthersCount: 0,
   })
   const [prayers, setPrayers] = useState<any[]>([])
-  const [showOnlyForOthers, setShowOnlyForOthers] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -48,25 +52,6 @@ export default function DashboardPage() {
       console.error('Erro ao buscar orações:', error)
     }
   }
-
-  const getFilteredStats = () => {
-    if (!showOnlyForOthers) {
-      return stats
-    }
-    
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const forOthersPrayers = prayers.filter(p => p.prayerForOther)
-    const forOthersToday = forOthersPrayers.filter(p => new Date(p.createdAt) >= today)
-    
-    return {
-      prayersToday: forOthersToday.length,
-      prayersTotal: forOthersPrayers.length,
-      intercessionsPublished: stats.intercessionsPublished
-    }
-  }
-
-  const displayStats = getFilteredStats()
 
   if (status === 'loading') {
     return (
@@ -173,42 +158,101 @@ export default function DashboardPage() {
           </div>
 
           {/* Estatísticas de Orações */}
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <span>🙏</span>
                 Pedidos de Oração Recebidos
               </h3>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/dashboard/nomes"
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 shadow-lg"
-                >
-                  <span className="flex items-center gap-2">
-                    <span>✨</span>
-                    Modo galeria
-                  </span>
-                </Link>
-            
+              <Link
+                href="/dashboard/nomes"
+                className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 shadow-lg"
+              >
+                <span className="flex items-center gap-2">
+                  <span>✨</span>
+                  Modo galeria
+                </span>
+              </Link>
+            </div>
+
+            {/* Grid de estatísticas - Responsivo */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              {/* Hoje */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-3 sm:p-4 border border-blue-200 dark:border-blue-700/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl sm:text-2xl">📅</span>
+                  <p className="text-xs sm:text-sm font-medium text-blue-900 dark:text-blue-300">Hoje</p>
+                </div>
+                <p className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.prayersToday}</p>
+                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">pedidos</p>
+              </div>
+
+              {/* Total */}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-3 sm:p-4 border border-purple-200 dark:border-purple-700/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl sm:text-2xl">📊</span>
+                  <p className="text-xs sm:text-sm font-medium text-purple-900 dark:text-purple-300">Total</p>
+                </div>
+                <p className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">{stats.prayersTotal}</p>
+                <p className="text-xs text-purple-700 dark:text-purple-400 mt-1">todo período</p>
+              </div>
+
+              {/* Desde última intercessão */}
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-3 sm:p-4 border border-amber-200 dark:border-amber-700/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl sm:text-2xl">⏱️</span>
+                  <p className="text-xs sm:text-sm font-medium text-amber-900 dark:text-amber-300">Recentes</p>
+                </div>
+                <p className="text-2xl sm:text-3xl font-bold text-amber-600 dark:text-amber-400">{stats.prayersSinceLastIntercession}</p>
+                <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">desde última</p>
+              </div>
+
+              {/* Intercessões publicadas */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-3 sm:p-4 border border-green-200 dark:border-green-700/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl sm:text-2xl">✅</span>
+                  <p className="text-xs sm:text-sm font-medium text-green-900 dark:text-green-300">Publicadas</p>
+                </div>
+                <p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">{stats.intercessionsPublished}</p>
+                <p className="text-xs text-green-700 dark:text-green-400 mt-1">intercessões</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{displayStats.prayersToday}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Hoje</p>
-              </div>
-              <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{displayStats.prayersTotal}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total de Pedidos</p>
-              </div>
-              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{displayStats.intercessionsPublished}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Intercessões Publicadas</p>
+
+            {/* Estatísticas de orações para outras pessoas */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+              <h4 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                <span>💝</span>
+                Orações para Outras Pessoas
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-lg p-3 border border-pink-200 dark:border-pink-700/30">
+                  <p className="text-lg sm:text-2xl font-bold text-pink-600 dark:text-pink-400">{stats.prayersForOthersToday}</p>
+                  <p className="text-xs text-pink-700 dark:text-pink-400 mt-1">pedidos hoje</p>
+                </div>
+                <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-800/20 rounded-lg p-3 border border-rose-200 dark:border-rose-700/30">
+                  <p className="text-lg sm:text-2xl font-bold text-rose-600 dark:text-rose-400">{stats.prayersForOthersTotal}</p>
+                  <p className="text-xs text-rose-700 dark:text-rose-400 mt-1">total geral</p>
+                </div>
+                <div className="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 dark:from-fuchsia-900/20 dark:to-fuchsia-800/20 rounded-lg p-3 border border-fuchsia-200 dark:border-fuchsia-700/30">
+                  <p className="text-lg sm:text-2xl font-bold text-fuchsia-600 dark:text-fuchsia-400">{stats.uniquePrayersForOthersCount}</p>
+                  <p className="text-xs text-fuchsia-700 dark:text-fuchsia-400 mt-1">pessoas únicas</p>
+                </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
-              💡 {showOnlyForOthers ? 'Mostrando apenas orações feitas por outras pessoas' : 'Os pedidos de oração são enviados diretamente pelos fiéis através do site'}
-            </p>
+
+            {/* Info adicional */}
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <p className="flex items-center gap-1">
+                  💡 Os pedidos são enviados pelos fiéis através do site
+                </p>
+                {stats.lastIntercessionDate && (
+                  <p className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded">
+                    📆 Última intercessão: {new Date(stats.lastIntercessionDate).toLocaleDateString('pt-BR')}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </main>
       </div>
