@@ -116,7 +116,7 @@ export default function NomesDoMesPage() {
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                      Pessoas Orando Este Mês
+                      Pedidos de Oração Este Mês
                     </h1>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
                       {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
