@@ -103,7 +103,7 @@ export default function Home() {
     if (displayImages.length === 0) return
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % displayImages.length)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(timer)
   }, [displayImages.length])
 
