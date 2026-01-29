@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import QRCode from 'react-qr-code'
 
 interface QRCodeGroup {
   id: string
@@ -25,6 +26,8 @@ export default function QRCodeGroupsPage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingGroup, setEditingGroup] = useState<QRCodeGroup | null>(null)
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [qrCodeGroup, setQRCodeGroup] = useState<QRCodeGroup | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -160,6 +163,47 @@ export default function QRCodeGroupsPage() {
     alert('URL copiada! Use esta URL para gerar o QR Code')
   }
 
+  const showQRCode = (group: QRCodeGroup) => {
+    setQRCodeGroup(group)
+    setShowQRModal(true)
+  }
+
+  const downloadQRCode = () => {
+    if (!qrCodeGroup) return
+    
+    const svg = document.getElementById('qr-code-svg')
+    if (!svg) return
+
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+
+    canvas.width = 1000
+    canvas.height = 1000
+
+    img.onload = () => {
+      if (ctx) {
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `qrcode-${qrCodeGroup.slug}.png`
+            a.click()
+            URL.revokeObjectURL(url)
+          }
+        })
+      }
+    }
+
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
+  }
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
@@ -281,11 +325,18 @@ export default function QRCodeGroupsPage() {
                   {/* Ações */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => copyQRCodeURL(group)}
+                      onClick={() => showQRCode(group)}
                       className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-cyan-700 hover:to-blue-700 transition"
-                      title="Copiar URL para QR Code"
+                      title="Ver QR Code"
                     >
-                      📋 Copiar URL
+                      📱 Ver QR
+                    </button>
+                    <button
+                      onClick={() => copyQRCodeURL(group)}
+                      className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                      title="Copiar URL"
+                    >
+                      📋
                     </button>
                     <button
                       onClick={() => openModal(group)}
@@ -398,6 +449,68 @@ export default function QRCodeGroupsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal QR Code */}
+      {showQRModal && qrCodeGroup && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowQRModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                {qrCodeGroup.name}
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                Escaneie o QR Code para acessar o formulário
+              </p>
+
+              {/* QR Code */}
+              <div className="bg-white p-6 rounded-xl inline-block mb-6">
+                <QRCode
+                  id="qr-code-svg"
+                  value={`${window.location.origin}?from=${qrCodeGroup.slug}`}
+                  size={256}
+                  level="H"
+                />
+              </div>
+
+              {/* URL */}
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-6">
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-mono break-all">
+                  {`${window.location.origin}?from=${qrCodeGroup.slug}`}
+                </p>
+              </div>
+
+              {/* Ações */}
+              <div className="flex gap-3">
+                <button
+                  onClick={downloadQRCode}
+                  className="flex-1 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-700 hover:to-blue-700 transition shadow-lg"
+                >
+                  ⬇️ Baixar PNG
+                </button>
+                <button
+                  onClick={() => copyQRCodeURL(qrCodeGroup)}
+                  className="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                >
+                  📋 Copiar URL
+                </button>
+              </div>
+
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="w-full mt-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}
