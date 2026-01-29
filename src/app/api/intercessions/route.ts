@@ -18,6 +18,9 @@ export async function GET(request: Request) {
       take: limit ? parseInt(limit) : undefined,
     })
 
+    console.log('🔍 Busca de intercessões - Total encontrado:', posts.length)
+    console.log('📊 Posts:', posts)
+
     // Converter images de string JSON para array
     const postsWithParsedImages = posts.map(post => ({
       ...post,

@@ -16,50 +16,61 @@ export default function Home() {
   const [message, setMessage] = useState('')
   const [currentSlide, setCurrentSlide] = useState(0)
   const [recentPosts, setRecentPosts] = useState<any[]>([])
+  const [verse, setVerse] = useState({
+    text: "Não andeis ansiosos por coisa alguma; antes em tudo sejam os vossos pedidos conhecidos diante de Deus pela oração e súplica com ações de graças.",
+    reference: "Filipenses 4:6"
+  })
 
   useEffect(() => {
-    // Buscar posts recentes
-    fetch('/api/intercessions?limit=4')
+    // Buscar versículo
+    fetch('/api/admin/verse')
       .then(res => res.json())
       .then(data => {
+        if (data.verse) {
+          setVerse(data.verse)
+        }
+      })
+      .catch(err => console.error('Erro ao buscar versículo:', err))
+
+    // Buscar posts recentes
+    fetch('/api/intercessions?limit=1')
+      .then(res => res.json())
+      .then(data => {
+        console.log('📸 Dados da última intercessão:', data)
         if (data.posts && data.posts.length > 0) {
+          console.log('✅ Intercessão encontrada:', data.posts[0])
+          console.log('🖼️ Imagens:', data.posts[0].images)
           setRecentPosts(data.posts)
+        } else {
+          console.log('⚠️ Nenhuma intercessão encontrada')
         }
       })
       .catch(err => console.error('Erro ao buscar posts:', err))
   }, [])
 
-  // Imagens do carrossel - usa posts reais ou fallback
-  const carouselImages = recentPosts.length > 0
-    ? recentPosts
-        .map(post => {
-          let imageUrl = ''
-          // A API já retorna images como array, não precisa fazer parse
-          if (Array.isArray(post.images) && post.images.length > 0) {
-            imageUrl = post.images[0]
-          } else if (typeof post.images === 'string') {
-            // Fallback caso ainda seja string
-            try {
-              const parsed = JSON.parse(post.images)
-              imageUrl = Array.isArray(parsed) ? parsed[0] : parsed
-            } catch {
-              imageUrl = post.images
-            }
-          }
-          return {
-            id: post.id,
-            url: imageUrl,
-            alt: post.title,
-            date: new Date(post.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  // Imagens do carrossel - usa TODAS as fotos da última intercessão
+  const carouselImages = recentPosts.length > 0 && recentPosts[0] && recentPosts[0].images
+    ? (() => {
+        const latestPost = recentPosts[0]
+        const images: any[] = []
+        
+        // A API já retorna images como array
+        const imageArray = Array.isArray(latestPost.images) ? latestPost.images : []
+        
+        imageArray.forEach((img: string, index: number) => {
+          if (img && typeof img === 'string' && img.trim().length > 0) {
+            images.push({
+              id: `${latestPost.id}-${index}`,
+              url: img,
+              alt: latestPost.title,
+              date: new Date(latestPost.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+            })
           }
         })
-        .filter(image => {
-          // Valida se url existe, é string, não está vazia e começa com http
-          return image.url && 
-                 typeof image.url === 'string' && 
-                 image.url.trim().length > 0 && 
-                 (image.url.startsWith('http://') || image.url.startsWith('https://'))
-        })
+        
+        console.log('🎨 Imagens processadas para carrossel:', images)
+        return images
+      })()
     : []
   
   // Se não houver posts válidos, usa imagens de fallback
@@ -395,10 +406,10 @@ export default function Home() {
           <div className="mt-8 text-center">
             <div className="inline-block bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl px-6 py-4 shadow-lg border border-white/20">
               <p className="text-sm text-gray-700 dark:text-gray-200 italic mb-2">
-                "Não andeis ansiosos por coisa alguma; antes em tudo sejam os vossos pedidos conhecidos diante de Deus pela oração e súplica com ações de graças."
+                "{verse.text}"
               </p>
               <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                Filipenses 4:6
+                {verse.reference}
               </p>
             </div>
           </div>

@@ -62,6 +62,15 @@ model IntercessionPost {
   @@index([published])
 }
 
+model SiteSettings {
+  id        String   @id @default(uuid())
+  key       String   @unique // Ex: "verse_text", "verse_reference"
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique

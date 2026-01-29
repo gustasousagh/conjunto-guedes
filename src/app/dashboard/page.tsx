@@ -274,6 +274,27 @@ export default function DashboardPage() {
 
             {/* Info adicional */}
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              {/* Link para Editar Versículo */}
+              <Link
+                href="/dashboard/edit-verse"
+                className="mb-4 block p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl border border-amber-200 dark:border-amber-700/30 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-yellow-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">📖</span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      Editar Versículo
+                    </h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      Altere o versículo bíblico da página inicial
+                    </p>
+                  </div>
+                  <span className="ml-auto text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </Link>
+
               {/* Link para QR Codes */}
               <Link
                 href="/dashboard/qrcode-groups"
