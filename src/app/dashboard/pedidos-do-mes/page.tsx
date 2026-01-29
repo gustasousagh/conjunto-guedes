@@ -32,12 +32,18 @@ interface QRCodeGroup {
   active: boolean
 }
 
+interface ProcessedPrayer extends Prayer {
+  displayName: string
+  originalName: string
+  date: Date
+}
+
 export default function NomesDoMesPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [prayers, setPrayers] = useState<Prayer[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(null)
+  const [selectedPrayer, setSelectedPrayer] = useState<ProcessedPrayer | null>(null)
   const [responseText, setResponseText] = useState('')
   const [saving, setSaving] = useState(false)
   const [qrCodeGroups, setQrCodeGroups] = useState<QRCodeGroup[]>([])
@@ -195,7 +201,7 @@ export default function NomesDoMesPage() {
       .filter(item => item.displayName && item.displayName.trim().length > 0)
   }
 
-  const openPrayerModal = (prayer: any) => {
+  const openPrayerModal = (prayer: ProcessedPrayer) => {
     setSelectedPrayer(prayer)
     setResponseText(prayer.response || '')
   }
