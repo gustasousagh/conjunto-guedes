@@ -4,13 +4,24 @@ import prisma from '@/lib/prisma'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, prayer, prayerForOther, otherPersonName } = body
+    const { name, email, prayer, prayerForOther, otherPersonName, source } = body
 
     if (!prayer || prayer.trim() === '') {
       return NextResponse.json(
         { error: 'O pedido de oração é obrigatório' },
         { status: 400 }
       )
+    }
+
+    // Buscar o grupo pelo slug se um source foi fornecido
+    let qrCodeGroupId = null
+    if (source) {
+      const group = await prisma.qRCodeGroup.findUnique({
+        where: { slug: source, active: true }
+      })
+      if (group) {
+        qrCodeGroupId = group.id
+      }
     }
 
     const newPrayer = await prisma.prayer.create({
@@ -20,6 +31,8 @@ export async function POST(request: Request) {
         prayer: prayer.trim(),
         prayerForOther: prayerForOther || false,
         otherPersonName: otherPersonName || null,
+        source: source || null,
+        qrCodeGroupId: qrCodeGroupId,
       },
     })
 

@@ -197,7 +197,7 @@ export default function DashboardPage() {
                 Pedidos de Oração Recebidos
               </h3>
               <Link
-                href="/dashboard/nomes"
+                href="/dashboard/pedidos-do-mes"
                 className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 shadow-lg"
               >
                 <span className="flex items-center gap-2">
@@ -274,6 +274,27 @@ export default function DashboardPage() {
 
             {/* Info adicional */}
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              {/* Link para QR Codes */}
+              <Link
+                href="/dashboard/qrcode-groups"
+                className="mb-4 block p-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl border border-cyan-200 dark:border-cyan-700/30 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">📱</span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      Grupos de QR Codes
+                    </h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      Gerencie os QR Codes e rastreie as origens dos pedidos
+                    </p>
+                  </div>
+                  <span className="ml-auto text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </Link>
+
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-400">
                 <p className="flex items-center gap-1">
                   💡 Os pedidos são enviados pelos fiéis através do site

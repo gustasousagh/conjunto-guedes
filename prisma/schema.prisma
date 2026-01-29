@@ -14,17 +14,38 @@ datasource db {
 }
 
 model Prayer {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   name            String?
   email           String?
-  prayer          String   @db.Text
-  prayerForOther  Boolean  @default(false)
+  prayer          String        @db.Text
+  prayerForOther  Boolean       @default(false)
   otherPersonName String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  response        String?       @db.Text
+  respondedAt     DateTime?
+  source          String?       // De onde veio (ex: "igreja", "praca", etc)
+  qrCodeGroup     QRCodeGroup?  @relation(fields: [qrCodeGroupId], references: [id])
+  qrCodeGroupId   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([email])
   @@index([createdAt])
+  @@index([source])
+  @@index([qrCodeGroupId])
+}
+
+model QRCodeGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique  // Nome do grupo (ex: "Igreja Central")
+  slug        String   @unique  // Slug para URL (ex: "igreja-central")
+  description String?  @db.Text
+  color       String   @default("#6366f1") // Cor para identificação visual
+  active      Boolean  @default(true)
+  prayers     Prayer[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
 }
 
 model IntercessionPost {

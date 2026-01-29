@@ -10,6 +10,8 @@ interface Prayer {
   prayer: string
   prayerForOther: boolean
   otherPersonName: string | null
+  response: string | null
+  respondedAt: string | null
   createdAt: string
 }
 
@@ -77,7 +79,7 @@ export default function MinhasOracoes() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-                    Conjunto Guedes
+                    Conjunto Quedes
                   </h1>
                   <p className="text-xs text-gray-600 dark:text-gray-400">Muro das Orações</p>
                 </div>
@@ -203,9 +205,45 @@ export default function MinhasOracoes() {
                             {formatDate(prayer.createdAt)}
                           </span>
                         </div>
-                        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
-                          {prayer.prayer}
-                        </p>
+
+                        {/* Pedido de Oração */}
+                        <div className="mb-4">
+                          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
+                            {prayer.prayer}
+                          </p>
+                        </div>
+
+                        {/* Resposta */}
+                        {prayer.response && (
+                          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="text-lg">💬</span>
+                              <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                                Resposta do Conjunto Guedes
+                              </h4>
+                              {prayer.respondedAt && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  • {new Date(prayer.respondedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                                </span>
+                              )}
+                            </div>
+                            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                              <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
+                                {prayer.response}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Status sem resposta */}
+                        {!prayer.response && (
+                          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span>⏳</span>
+                              <span>Sua oração foi recebida e está sendo levada em oração</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -219,7 +257,7 @@ export default function MinhasOracoes() {
         <footer className="border-t border-white/20 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20 mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2026 Conjunto Guedes. Feito com ❤️ para a glória de Deus.
+              © 2026 Conjunto Quedes. Feito com ❤️ para a glória de Deus.
             </p>
           </div>
         </footer>

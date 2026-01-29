@@ -55,25 +55,48 @@ export default function NewIntercessionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 sm:p-6 md:p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Nova Intercessão</h1>
-          <Link
-            href="/dashboard/intercessions"
-            className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-lg hover:bg-white/20 transition text-center text-sm sm:text-base"
-          >
-            Voltar
-          </Link>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900" />
+      
+      <div className="fixed inset-0 opacity-30">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-1000" />
+      </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 text-white"
-        >
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="border-b border-white/20 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard/intercessions" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  ← Voltar
+                </Link>
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-xl">➕</span>
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                      Nova Intercessão
+                    </h1>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Criar novo post</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20"
+          >
           <div className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-xs sm:text-sm font-semibold mb-2">
+              <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
                 Título *
               </label>
               <input
@@ -83,13 +106,13 @@ export default function NewIntercessionPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-white/50 text-sm sm:text-base"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="Ex: Culto de Oração - Janeiro 2024"
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold mb-2">
+              <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
                 Descrição *
               </label>
               <textarea
@@ -99,13 +122,13 @@ export default function NewIntercessionPage() {
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={5}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-white/50 resize-none text-sm sm:text-base"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                 placeholder="Descreva a intercessão realizada..."
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold mb-2">
+              <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
                 Data *
               </label>
               <input
@@ -115,12 +138,12 @@ export default function NewIntercessionPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
                 }
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white text-sm sm:text-base"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold mb-3">
+              <label className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
                 Imagens
               </label>
               <div className="space-y-3">
@@ -130,33 +153,33 @@ export default function NewIntercessionPage() {
                     value={imageInput}
                     onChange={(e) => setImageInput(e.target.value)}
                     placeholder="Cole a URL da imagem aqui"
-                    className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-white/50 text-sm sm:text-base"
+                    className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   <button
                     type="button"
                     onClick={addImage}
-                    className="px-4 sm:px-6 py-2 sm:py-3 bg-green-500/30 hover:bg-green-500/50 rounded-lg font-semibold transition text-sm sm:text-base"
+                    className="px-6 py-3 bg-green-500/20 hover:bg-green-500/30 text-green-700 dark:text-green-300 rounded-lg font-semibold transition"
                   >
                     Adicionar
                   </button>
                 </div>
 
                 {images.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     {images.map((img, index) => (
                       <div
                         key={index}
-                        className="relative group rounded-lg overflow-hidden"
+                        className="relative group rounded-lg overflow-hidden border-2 border-white/20"
                       >
                         <img
                           src={img}
                           alt={`Imagem ${index + 1}`}
-                          className="w-full h-40 sm:h-48 object-cover"
+                          className="w-full h-48 object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 px-2 sm:px-3 py-1 bg-red-500 hover:bg-red-600 rounded-lg text-xs sm:text-sm font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          className="absolute top-2 right-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition shadow-lg"
                         >
                           Remover
                         </button>
@@ -165,7 +188,7 @@ export default function NewIntercessionPage() {
                   </div>
                 )}
 
-                <p className="text-white/50 text-xs sm:text-sm">
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
                   💡 Dica: Use serviços como Imgur, ImgBB ou Cloudinary para hospedar suas imagens e cole a URL aqui
                 </p>
               </div>
@@ -179,30 +202,31 @@ export default function NewIntercessionPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, published: e.target.checked })
                 }
-                className="w-4 h-4 sm:w-5 sm:h-5 rounded border-white/20 bg-white/5 text-purple-600 focus:ring-2 focus:ring-purple-500"
+                className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-blue-600 focus:ring-2 focus:ring-blue-500"
               />
-              <label htmlFor="published" className="font-semibold cursor-pointer text-sm sm:text-base">
+              <label htmlFor="published" className="font-semibold cursor-pointer text-gray-700 dark:text-gray-300">
                 Publicar imediatamente
               </label>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:from-blue-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
                 {loading ? 'Criando...' : 'Criar Intercessão'}
               </button>
               <Link
                 href="/dashboard/intercessions"
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition text-center text-sm sm:text-base"
+                className="px-8 py-4 bg-white/60 dark:bg-gray-700/60 hover:bg-white/80 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition text-center"
               >
                 Cancelar
               </Link>
             </div>
           </div>
         </form>
+        </main>
       </div>
     </div>
   )

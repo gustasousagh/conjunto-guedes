@@ -102,15 +102,24 @@ export default function Home() {
     setMessage('')
 
     try {
+      // Pegar o source do localStorage
+      const source = localStorage.getItem('prayer_source')
+      
       const response = await fetch('/api/prayers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          source: source || null
+        })
       })
 
       if (response.ok) {
         setMessage('Seu pedido de oração foi enviado! Deus abençoe você. 🙏')
         setFormData({ name: '', email: '', prayer: '', prayerForOther: false, otherPersonName: '' })
+        
+        // Limpar o source após o envio
+        localStorage.removeItem('prayer_source')
       } else {
         setMessage('Erro ao enviar. Tente novamente.')
       }
@@ -145,7 +154,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-                    Conjunto Guedes
+                    Conjunto Quedes
                   </h1>
                   <p className="text-xs text-gray-600 dark:text-gray-400">Muro das Orações</p>
                 </div>
@@ -399,7 +408,7 @@ export default function Home() {
         <footer className="border-t border-white/20 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20 mt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2026 Conjunto Guedes. Feito com ❤️ para a glória de Deus.
+              © 2026 Conjunto Quedes. Feito com ❤️ para a glória de Deus.
             </p>
           </div>
         </footer>

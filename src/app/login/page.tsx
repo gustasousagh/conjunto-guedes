@@ -61,7 +61,7 @@ export default function LoginPage() {
             </div>
             <div className="text-left">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-                Conjunto Guedes
+                Conjunto Quedes
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">Administração</p>
             </div>

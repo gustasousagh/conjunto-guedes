@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
+import { Suspense } from "react";
+import QRCodeTracker from "@/components/QRCodeTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Conjunto Guedes - Muro das Orações",
+  title: "Conjunto Quedes - Muro das Orações",
   description: "Sistema de pedidos de oração",
 };
 
@@ -28,7 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <Suspense fallback={null}>
+            <QRCodeTracker />
+          </Suspense>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

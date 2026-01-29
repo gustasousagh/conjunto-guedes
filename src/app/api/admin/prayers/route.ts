@@ -15,6 +15,16 @@ export async function GET() {
     }
 
     const prayers = await prisma.prayer.findMany({
+      include: {
+        qrCodeGroup: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true
+          }
+        }
+      },
       orderBy: {
         createdAt: 'desc',
       },

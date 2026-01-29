@@ -10,6 +10,7 @@ interface IntercessionPost {
   description: string
   date: string
   images: string[]
+  createdAt: string
 }
 
 export default function IntercessoesPage() {
@@ -93,7 +94,7 @@ export default function IntercessoesPage() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-                    Conjunto Guedes
+                    Conjunto Quedes
                   </h1>
                   <p className="text-xs text-gray-600 dark:text-gray-400">Muro das Orações</p>
                 </div>
@@ -262,11 +263,25 @@ export default function IntercessoesPage() {
 
               {/* Conteúdo do Modal */}
               <div className="p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl">🕊️</span>
-                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                    {formatDate(selectedPost.date)}
-                  </span>
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🕊️</span>
+                    <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      {formatDate(selectedPost.date)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <span>⏱️</span>
+                    <span>
+                      Postado em {new Date(selectedPost.createdAt).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
                 </div>
                 
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -285,7 +300,7 @@ export default function IntercessoesPage() {
         <footer className="border-t border-white/20 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20 mt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2026 Conjunto Guedes. Feito com ❤️ para a glória de Deus.
+              © 2026 Conjunto Quedes. Feito com ❤️ para a glória de Deus.
             </p>
           </div>
         </footer>
