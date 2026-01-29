@@ -219,7 +219,7 @@ export default function MinhasOracoes() {
                             <div className="flex items-center gap-2 mb-3">
                               <span className="text-lg">💬</span>
                               <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                                Resposta do Conjunto Guedes
+                                Resposta do Conjunto Quedes
                               </h4>
                               {prayer.respondedAt && (
                                 <span className="text-xs text-gray-500 dark:text-gray-400">
