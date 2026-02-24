@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,6 +22,7 @@ model Prayer {
   otherPersonName String?
   response        String?       @db.Text
   respondedAt     DateTime?
+  notifiedByEmail Boolean       @default(false)
   source          String?       // De onde veio (ex: "igreja", "praca", etc)
   qrCodeGroup     QRCodeGroup?  @relation(fields: [qrCodeGroupId], references: [id])
   qrCodeGroupId   String?
@@ -78,4 +79,13 @@ model User {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EmailUnsubscribe {
+  id        String   @id @default(uuid())
+  email     String   @unique // Email que não quer mais receber notificações
+  reason    String?  @db.Text // Motivo opcional
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }

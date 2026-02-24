@@ -14,6 +14,7 @@ interface Prayer {
   otherPersonName: string | null
   response: string | null
   respondedAt: string | null
+  notifiedByEmail: boolean
   createdAt: string
   source: string | null
   qrCodeGroup: {
@@ -45,6 +46,8 @@ export default function NomesDoMesPage() {
   const [loading, setLoading] = useState(true)
   const [selectedPrayer, setSelectedPrayer] = useState<ProcessedPrayer | null>(null)
   const [responseText, setResponseText] = useState('')
+  const [notifyByEmail, setNotifyByEmail] = useState(false)
+  const [emailUnsubscribed, setEmailUnsubscribed] = useState(false)
   const [saving, setSaving] = useState(false)
   const [qrCodeGroups, setQrCodeGroups] = useState<QRCodeGroup[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
@@ -201,14 +204,29 @@ export default function NomesDoMesPage() {
       .filter(item => item.displayName && item.displayName.trim().length > 0)
   }
 
-  const openPrayerModal = (prayer: ProcessedPrayer) => {
+  const openPrayerModal = async (prayer: ProcessedPrayer) => {
     setSelectedPrayer(prayer)
     setResponseText(prayer.response || '')
+    setNotifyByEmail(false)
+    setEmailUnsubscribed(false)
+    
+    // Verificar se o email está na lista de cancelamento
+    if (prayer.email) {
+      try {
+        const res = await fetch(`/api/admin/check-unsubscribe?email=${encodeURIComponent(prayer.email)}`)
+        const data = await res.json()
+        setEmailUnsubscribed(data.unsubscribed || false)
+      } catch (error) {
+        console.error('Erro ao verificar cancelamento:', error)
+      }
+    }
   }
 
   const closePrayerModal = () => {
     setSelectedPrayer(null)
     setResponseText('')
+    setNotifyByEmail(false)
+    setEmailUnsubscribed(false)
   }
 
   const saveResponse = async () => {
@@ -219,16 +237,35 @@ export default function NomesDoMesPage() {
       const res = await fetch(`/api/admin/prayers/${selectedPrayer.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ response: responseText }),
+        body: JSON.stringify({ 
+          response: responseText,
+          notifyByEmail: notifyByEmail 
+        }),
       })
 
       if (res.ok) {
+        const data = await res.json()
+        
         // Atualizar a lista local
         setPrayers(prev => prev.map(p => 
           p.id === selectedPrayer.id 
-            ? { ...p, response: responseText, respondedAt: new Date().toISOString() }
+            ? { 
+                ...p, 
+                response: responseText, 
+                respondedAt: new Date().toISOString(),
+                notifiedByEmail: data.emailSent || false
+              }
             : p
         ))
+        
+        if (data.emailSent) {
+          alert('✅ Resposta salva e email enviado com sucesso!')
+        } else if (data.unsubscribed) {
+          alert('⚠️ Resposta salva, mas esta pessoa cancelou o recebimento de notificações.')
+        } else if (notifyByEmail && !data.emailSent) {
+          alert('⚠️ Resposta salva, mas não foi possível enviar o email.')
+        }
+        
         closePrayerModal()
       } else {
         alert('Erro ao salvar resposta')
@@ -646,6 +683,65 @@ export default function NomesDoMesPage() {
                   rows={5}
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                 />
+                
+                {/* Checkbox para notificação por email */}
+                {selectedPrayer.email && !emailUnsubscribed && (
+                  <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={notifyByEmail}
+                        onChange={(e) => setNotifyByEmail(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            📧 Notificar por email
+                          </span>
+                          {selectedPrayer.notifiedByEmail && (
+                            <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+                              ✓ Já notificado
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          Enviar um email para <strong>{selectedPrayer.email}</strong> com sua resposta
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                )}
+                
+                {/* Aviso se o email foi cancelado */}
+                {selectedPrayer.email && emailUnsubscribed && (
+                  <div className="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">🔕</span>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-red-900 dark:text-red-200 mb-1">
+                          Notificações canceladas
+                        </h4>
+                        <p className="text-sm text-red-800 dark:text-red-300 mb-2">
+                          Esta pessoa cancelou o recebimento de notificações por email.
+                        </p>
+                        <p className="text-xs text-red-700 dark:text-red-400">
+                          Email: <strong>{selectedPrayer.email}</strong>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Aviso se não tem email */}
+                {!selectedPrayer.email && (
+                  <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>Esta pessoa não forneceu email, não será possível notificá-la.</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Botões */}
